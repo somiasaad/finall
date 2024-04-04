@@ -294,7 +294,6 @@ const enterRecord = catchAsyncError(async (req, res) => {
 
 const getHistoryDay = catchAsyncError(async (req, res) => {
 
-
   const userId = req.user._id;
 
   // حساب بداية اليوم الحالي
@@ -315,7 +314,7 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
       },
     },
   ]);
-  const dailyData = { happy: 0, sad: 0, surprised: 0 };
+  const dailyData = { happy: 0, angry: 0, surprised: 0 };
   emotions.forEach((emotion) => {
     dailyData[emotion._id] = emotion.count;
   });
@@ -403,7 +402,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
 
     const dailyData = {
       happy: 0,
-      sad: 0,
+      angry: 0,
       surprised: 0,
     };
 
@@ -455,7 +454,7 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
 
     const weeklyData = {
       happy: 0,
-      sad: 0,
+      angry: 0,
       surprised: 0,
     };
 
@@ -503,7 +502,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
 
     const monthlyData = {
       happy: 0,
-      sad: 0,
+      angry: 0,
       surprised: 0,
     };
 
@@ -558,7 +557,7 @@ const getHistoryYearpart = catchAsyncError(async (req, res) => {
 
     const quarterlyData = {
       happy: 0,
-      sad: 0,
+      angry: 0,
       surprised: 0,
     };
 
