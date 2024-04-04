@@ -449,7 +449,7 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
     endOfWeek.setDate(startOfWeek.getDate() + 7);
     endOfWeek.setHours(23, 59, 59, 999);
 
-    const emotions = await UserStatus.aggregate([
+    const emotions = await Record.aggregate([
       {
         $match: {
           userId,
@@ -498,7 +498,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
     const currentMonth = new Date(startOfYear);
     currentMonth.setMonth(startOfYear.getMonth() + i);
 
-    const emotions = await UserStatus.aggregate([
+    const emotions = await Record.aggregate([
       {
         $match: {
           userId,
