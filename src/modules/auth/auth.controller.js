@@ -201,7 +201,7 @@ const logStatus = async (req, res) => {
 const getSingleUserStatus = async (req, res) => {
   try {
     const { userId } = req.params;
-    const getUserStatus = await UserStatus.findById(userId);
+    const getUserStatus = await UserStatus.find({ userId });
     res.status(200).json(getUserStatus);
   } catch (error) {
     console.log(error.message);
