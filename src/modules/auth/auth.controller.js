@@ -300,7 +300,7 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const emotions = await Record.aggregate([
+  const emotions = await UserStatus.aggregate([
     {
       $match: {
         userId,
@@ -385,7 +385,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
     const currentDate = new Date(startOfWeek);
     currentDate.setDate(startOfWeek.getDate() + i);
 
-    const emotions = await Record.aggregate([
+    const emotions = await UserStatus.aggregate([
       {
         $match: {
           userId,
@@ -434,7 +434,7 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
     endOfWeek.setDate(startOfWeek.getDate() + 7);
     endOfWeek.setHours(23, 59, 59, 999);
 
-    const emotions = await Record.aggregate([
+    const emotions = await UserStatus.aggregate([
       {
         $match: {
           userId,
@@ -482,7 +482,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
     const currentMonth = new Date(startOfYear);
     currentMonth.setMonth(startOfYear.getMonth() + i);
 
-    const emotions = await Record.aggregate([
+    const emotions = await UserStatus.aggregate([
       {
         $match: {
           userId,
@@ -537,7 +537,7 @@ const getHistoryYearpart = catchAsyncError(async (req, res) => {
     endOfQuarter.setDate(endOfQuarter.getDate() - 1);
     endOfQuarter.setHours(23, 59, 59, 999);
 
-    const emotions = await Record.aggregate([
+    const emotions = await UserStatus.aggregate([
       {
         $match: {
           userId,
