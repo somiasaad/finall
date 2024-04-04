@@ -188,9 +188,9 @@ let resetPassword = catchAsyncError(async (req, res) => {
 // Log user status
 const logStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { emotion } = req.body;
     const userId = req.user._id;
-    const userStatus = await UserStatus.create({ userId, status });
+    const userStatus = await UserStatus.create({ userId, emotion });
     res.status(200).send("Status logged successfully." + userStatus);
   } catch (error) {
     console.error(error);
@@ -273,34 +273,47 @@ function results() {
 
 }
 // 1. تسجيل المشاعر
+// const enterRecord = catchAsyncError(async (req, res) => {
+
+//   // const userId = req.user._id;
+
+//   const userId = req.user._id;
+
+//   // const emotion = 'happy'
+
+//   const emotion = req.body;
+
+//   // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
+//   const record = new Record({ userId, emotion, date: new Date() });
+//   // const record = new Record({ userId, randomNumber, date: new Date() });
+//   await record.save();
+
+//   res.status(200).send('تم تسجيل المشاعر بنجاح');
+// })
+// 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
-
-  // const userId = req.user._id;
-  const userId = req.user._id;
-
-  const emotion = 'happy'
-  results(randomNumber)
-  // const emotion = req.body;
+  const { userId, emotion } = req.body;
 
   // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
-  // const record = new Record({ userId, emotion, date: new Date() });
-  const record = new Record({ userId, randomNumber, date: new Date() });
+  const record = new Record({ userId, emotion, date: new Date() });
   await record.save();
 
   res.status(200).send('تم تسجيل المشاعر بنجاح');
-})
-
+}
+)
 /////////////////////////////////
 
 const getHistoryDay = catchAsyncError(async (req, res) => {
 
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const { userId } = req.params;
+
 
   // حساب بداية اليوم الحالي
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const emotions = await UserStatus.aggregate([
+  const emotions = await Record.aggregate([
     {
       $match: {
         userId,
@@ -371,7 +384,8 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
 ////////////////////////////////////////////////
 const getHistoryWeek = catchAsyncError(async (req, res) => {
 
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const { userId } = req.params;
 
   const startOfWeek = new Date();
   startOfWeek.setHours(0, 0, 0, 0);
@@ -385,7 +399,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
     const currentDate = new Date(startOfWeek);
     currentDate.setDate(startOfWeek.getDate() + i);
 
-    const emotions = await UserStatus.aggregate([
+    const emotions = await Record.aggregate([
       {
         $match: {
           userId,
@@ -418,7 +432,8 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
 //////////////////////////////////////////////////////
 const getHistoryMonth = catchAsyncError(async (req, res) => {
 
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const { userId } = req.params;
 
   const currentDate = new Date();
   const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -470,7 +485,8 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
 /////////////////////////////////////////////////////////yearlyData
 const getHistoryYear = catchAsyncError(async (req, res) => {
 
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const { userId } = req.params;
 
   const startOfYear = new Date();
   startOfYear.setMonth(0, 1);
@@ -519,7 +535,8 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
 const getHistoryYearpart = catchAsyncError(async (req, res) => {
 
 
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const { userId } = req.params;
 
 
   const currentDate = new Date();
