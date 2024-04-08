@@ -14,7 +14,7 @@ import Record from "../../../databases/modeles/record.js";
 
 const signUp = catchAsyncError(async (req, res, next) => {
   const gmail = await userModel.findOne({ email: req.body.email });
-  // if (gmail) return next(new AppError("Account Already Exist", 403));
+  if (gmail) return next(new AppError("Account Already Exist", 403));
 
   if (req.file) {
     req.body.imgCover = req.file.filename;
@@ -29,15 +29,13 @@ const signUp = catchAsyncError(async (req, res, next) => {
 const signIn = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await userModel.findOne({ email });
-  // console.log(user);
   if (!user) return next(new AppError("Account Not Found", 401));
   if (!(await bcrypt.compare(password, user.password)))
     return next(new AppError("Password Wrong", 403));
 
-  // if (!user.confrimEmail)
+  if (!user.confrimEmail)
 
-  // return next(new AppError("Please Verfiy Your Email and Login Again"));
-  // console.log(confirmEmail);
+  return next(new AppError("Please Verfiy Your Email and Login Again"));
   let token = jwt.sign(
     {
       email: user.email,
@@ -139,14 +137,14 @@ let forgetPassword = catchAsyncError(async (req, res) => {
   const transporter = createTransport({
     service: "outlook",
     auth: {
-      user: "mohamedahmed893@outlook.com",
+      user: "mohamed666888222@outlook.com",
       pass: "mo7$@4321",
     },
   });
 
   // Send password reset email
   const mailOptions = {
-    from: '"Mohamed 👻" <mohamedahmed893@outlook.com>',
+    from: '"Mohamed 👻" <mohamed666888222@outlook.com>',
     to: email,
     subject: "Password Reset ✔",
     html: htmlResetPassword(token),

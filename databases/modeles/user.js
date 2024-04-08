@@ -52,12 +52,12 @@ userSchema.pre('save', function () {
     this.password = bcrypt.hashSync(this.password, 7)
 })
 userSchema.post('save', function () {
-    this.imgCover = 'https://speech-sapm.onrender.com/' + this.imgCover
+    this.imgCover = 'https://finall-5w5w.onrender.com/' + this.imgCover
 })
 userSchema.pre('findOneAndUpdate', function () {
     if (this._update.password) this._update.password = bcrypt.hashSync(this._update.password, 8)
 })
 userSchema.post('init', (ele) => {
-    ele.imgCover = 'https://speech-sapm.onrender.com/' + ele.imgCover
+    ele.imgCover = 'https://finall-5w5w.onrender.com/' + ele.imgCover
 })
 export const userModel = mongoose.model('user', userSchema)
