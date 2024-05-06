@@ -277,6 +277,7 @@ const enterRecord = catchAsyncError(async (req, res) => {
 
 /////////////////////////////////day
 
+
 const getHistoryDay = catchAsyncError(async (req, res) => {
 
   // const userId = req.user._id;
@@ -317,10 +318,15 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
     updatedDay[emotion._id] = emotion.count;
   });
 
+  // تحديث قيم العواطف بناءً على الإيموجي المضاف
+  const { emoji } = req.body;
+  if (emoji && updatedDay.hasOwnProperty(emoji)) {
+    updatedDay[emoji] += 1;
+  }
+
   res.status(200).json({ Day: updatedDay });
 
 });
-  
 
 
 
