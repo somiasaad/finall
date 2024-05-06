@@ -35,7 +35,7 @@ const signIn = catchAsyncError(async (req, res, next) => {
 
   if (!user.confrimEmail)
 
-  return next(new AppError("Please Verfiy Your Email and Login Again"));
+    return next(new AppError("Please Verfiy Your Email and Login Again"));
   let token = jwt.sign(
     {
       email: user.email,
@@ -261,44 +261,20 @@ const getStatusCount = async (req, res) => {
 };
 ////////////////////////////////////////////////////////////
 
-//results
-function results() {
 
-  const words = ["happey", "sad", "surprised"]
-
-  const randomNumber = Math.floor(math.random() * words.length)
-  console.log(words[randomNumber])
-
-}
-// 1. تسجيل المشاعر
-// const enterRecord = catchAsyncError(async (req, res) => {
-
-//   // const userId = req.user._id;
-
-//   const userId = req.user._id;
-
-//   // const emotion = 'happy'
-
-//   const emotion = req.body;
-
-//   // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
-//   const record = new Record({ userId, emotion, date: new Date() });
-//   // const record = new Record({ userId, randomNumber, date: new Date() });
-//   await record.save();
-
-//   res.status(200).send('تم تسجيل المشاعر بنجاح');
-// })
-// 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
-  const { userId, emotion } = req.body;
 
-  // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
-  const record = new Record({ userId, emotion, date: new Date() });
+  const userId = req.body.user_id;
+
+  const emotion = req.body.emotion
+
+  const record = new Record({ userId, emotion });
   await record.save();
 
   res.status(200).send('تم تسجيل المشاعر بنجاح');
-}
-)
+})
+
+
 /////////////////////////////////
 
 const getHistoryDay = catchAsyncError(async (req, res) => {
@@ -325,7 +301,7 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
       },
     },
   ]);
-  const dailyData = { happy: 0, angry: 0, surprised: 0 };
+  const dailyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
   emotions.forEach((emotion) => {
     dailyData[emotion._id] = emotion.count;
   });
@@ -334,52 +310,8 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
 
 })
 ////////////////////////////////week
-// const getHistoryWeek = catchAsyncError(async (req, res) => {
 
-//   const userId = req.user._id;
 
-//   const startOfWeek = new Date();
-//   startOfWeek.setHours(0, 0, 0, 0);
-//   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-
-//   const weeklyData = {};
-
-//   for (let i = 0; i < 7; i++) {
-//     const currentDate = new Date(startOfWeek);
-//     currentDate.setDate(startOfWeek.getDate() + i);
-
-//     const emotions = await Record.aggregate([
-//       {
-//         $match: {
-//           userId,
-//           date: { $gte: currentDate, $lt: new Date(currentDate.getTime() + 86400000) },
-//         },
-//       },
-//       {
-//         $group: {
-//           _id: '$emotion',
-//           count: { $sum: 1 },
-//         },
-//       },
-//     ]);
-
-//     const dailyData = {
-//       happy: 0,
-//       sad: 0,
-//       surprised: 0,
-//     };
-
-//     emotions.forEach((emotion) => {
-//       dailyData[emotion._id] = emotion.count;
-//     });
-
-//     weeklyData[currentDate.toLocaleDateString('en-US', { weekday: 'long' })] = dailyData;
-//   }
-
-//   res.status(200).json({ Week: weeklyData });
-// });
-
-////////////////////////////////////////////////
 const getHistoryWeek = catchAsyncError(async (req, res) => {
 
   // const userId = req.user._id;
@@ -412,11 +344,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const dailyData = {
-      happy: 0,
-      angry: 0,
-      surprised: 0,
-    };
+    const dailyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 }
 
     emotions.forEach((emotion) => {
       dailyData[emotion._id] = emotion.count;
@@ -465,11 +393,7 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const weeklyData = {
-      happy: 0,
-      angry: 0,
-      surprised: 0,
-    };
+    const weeklyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
 
     emotions.forEach((emotion) => {
       weeklyData[emotion._id] = emotion.count;
@@ -514,11 +438,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const monthlyData = {
-      happy: 0,
-      angry: 0,
-      surprised: 0,
-    };
+    const monthlyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
 
     emotions.forEach((emotion) => {
       monthlyData[emotion._id] = emotion.count;
@@ -570,11 +490,7 @@ const getHistoryYearpart = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const quarterlyData = {
-      happy: 0,
-      angry: 0,
-      surprised: 0,
-    };
+    const quarterlyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
 
     emotions.forEach((emotion) => {
       quarterlyData[emotion._id] = emotion.count;

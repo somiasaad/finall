@@ -4,7 +4,10 @@ import mongoose from "mongoose";
 const RecordSchema = new mongoose.Schema({
     userId: String,
     emotion: String,
-    date: Date,
+    date: {
+        type: Date,
+        default: Date.now()
+    },
 });
 
 
