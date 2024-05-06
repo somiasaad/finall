@@ -275,13 +275,12 @@ const enterRecord = catchAsyncError(async (req, res) => {
 })
 
 
-/////////////////////////////////
+/////////////////////////////////day
 
 const getHistoryDay = catchAsyncError(async (req, res) => {
 
   // const userId = req.user._id;
   const { userId } = req.params;
-
 
   // حساب بداية اليوم الحالي
   const startOfDay = new Date();
@@ -301,14 +300,30 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
       },
     },
   ]);
-  const dailyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
+
+  // تحديث قيم العواطف في الكائن "Day"
+  const updatedDay = {
+    happy: 0,
+    angry: 0,
+    sad: 0,
+    neutral: 0,
+    calm: 0,
+    disgust: 0,
+    surprised: 0,
+    Fear: 0,
+  };
+
   emotions.forEach((emotion) => {
-    dailyData[emotion._id] = emotion.count;
+    updatedDay[emotion._id] = emotion.count;
   });
 
-  res.status(200).json({ Day: dailyData });
+  res.status(200).json({ Day: updatedDay });
 
-})
+});
+  
+
+
+
 ////////////////////////////////week
 
 
