@@ -260,7 +260,6 @@ const getStatusCount = async (req, res) => {
   }
 };
 ////////////////////////////////////////////////////////////
-
 // 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
   const { userId, emotion } = req.body;
@@ -270,7 +269,8 @@ const enterRecord = catchAsyncError(async (req, res) => {
   await record.save();
 
   res.status(200).send('تم تسجيل المشاعر بنجاح');
-
+}
+)
 /////////////////////////////////day
 
 
