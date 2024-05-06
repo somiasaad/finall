@@ -261,19 +261,15 @@ const getStatusCount = async (req, res) => {
 };
 ////////////////////////////////////////////////////////////
 
-
+// 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
+  const { userId, emotion } = req.body;
 
-  const userId = req.body.user_id;
-
-  const emotion = req.body.emotion
-
-  const record = new Record({ userId, emotion });
+  // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
+  const record = new Record({ userId, emotion, date: new Date() });
   await record.save();
 
   res.status(200).send('تم تسجيل المشاعر بنجاح');
-})
-
 
 /////////////////////////////////day
 
