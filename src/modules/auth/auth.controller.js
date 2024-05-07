@@ -278,11 +278,9 @@ const enterRecord = catchAsyncError(async (req, res) => {
 
 
 const getHistoryDay = catchAsyncError(async (req, res) => {
+  const userId = req.user._id;
 
-  // const userId = req.user._id;
-  const { userId } = req.params;
-
-  // حساب بداية اليوم الحالي
+  // Calculate start of the current day
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
@@ -295,38 +293,27 @@ const getHistoryDay = catchAsyncError(async (req, res) => {
     },
     {
       $group: {
-        _id: '$emotion',
+        _id: { userId: "$userId", emotion: "$emotion" },
         count: { $sum: 1 },
       },
     },
   ]);
 
-  // تحديث قيم العواطف في الكائن "Day"
-  const updatedDay = {
-    happy: 0,
-    angry: 0,
-    sad: 0,
-    neutral: 0,
-    calm: 0,
-    disgust: 0,
-    surprised: 0,
-    Fear: 0,
-  };
+  const dailyData = {};
 
-  emotions.forEach((emotion) => {
-    updatedDay[emotion._id] = emotion.count;
+  // Populate dailyData with initial counts
+  Object.keys(emotion_data).forEach((emotionType) => {
+    dailyData[emotionType] = 0;
   });
 
-  // تحديث قيم العواطف بناءً على الإيموجي المضاف
-  const { emoji } = req.body;
-  if (emoji && updatedDay.hasOwnProperty(emoji)) {
-    updatedDay[emoji] += 1;
-  }
+  // Update dailyData with counts from aggregation result
+  emotions.forEach((emotion) => {
+    const { emotion: emotionType } = emotion._id;
+    dailyData[emotionType] = emotion.count;
+  });
 
-  res.status(200).json({ Day: updatedDay });
-
+  res.status(200).json({ Day: dailyData });
 });
-
 
 
 ////////////////////////////////week
