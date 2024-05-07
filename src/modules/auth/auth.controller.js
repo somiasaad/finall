@@ -11,7 +11,7 @@ import { createTransport } from "nodemailer";
 import UserStatus from "../../../databases/modeles/status.js";
 import mongoose from "mongoose";
 import Record from "../../../databases/modeles/record.js";
-
+const { emotion_data } = require('./constants');
 const signUp = catchAsyncError(async (req, res, next) => {
   const gmail = await userModel.findOne({ email: req.body.email });
   if (gmail) return next(new AppError("Account Already Exist", 403));
