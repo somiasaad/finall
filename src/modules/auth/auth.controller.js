@@ -267,11 +267,11 @@ const enterRecord = catchAsyncError(async (req, res) => {
   const userId = req.user._id;
 
   const emotion = 'happy'
-  results(randomNumber)
+ 
   // const emotion = req.body;
 
   // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
-  // const record = new Record({ userId, emotion, date: new Date() });
+
   const record = new Record({ userId, randomNumber, date: new Date() });
   await record.save();
 
