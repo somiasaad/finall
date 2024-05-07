@@ -263,20 +263,21 @@ const getStatusCount = async (req, res) => {
 // 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
 
-
+  // const userId = req.user._id;
   const userId = req.user._id;
 
-  // const emotion = 'happy'
-
-  const emotion = req.body;
+  const emotion = 'happy'
+  results(randomNumber)
+  // const emotion = req.body;
 
   // قم بتسجيل المشاعر في قاعدة البيانات مع تاريخ الريكورد
-  const record = new Record({ userId, emotion, date: new Date() });
- 
+  // const record = new Record({ userId, emotion, date: new Date() });
+  const record = new Record({ userId, randomNumber, date: new Date() });
   await record.save();
 
   res.status(200).send('تم تسجيل المشاعر بنجاح');
 })
+
 /////////////////////////////////day
 
 
