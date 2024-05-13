@@ -3,8 +3,8 @@
 
 
 
-export const html=(token)=>{
-    return `<!DOCTYPE html>
+const html = (token) => {
+  return `<!DOCTYPE html>
     <html>
     <head>
     
@@ -267,3 +267,5 @@ export const html=(token)=>{
     </body>
     </html>`
 }
+
+module.exports = { html }

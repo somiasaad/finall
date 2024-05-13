@@ -1,10 +1,10 @@
-import jwt from 'jsonwebtoken'
-import nodemailer from 'nodemailer'
-import { html } from './html.js';
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const { html } = require('./html.cjs');
 
 
-export const sendToEmail = async (options) => {
- const   transporter = nodemailer.createTransport({
+const sendToEmail = async (options) => {
+    const transporter = nodemailer.createTransport({
         service: 'outlook',
         auth: {
             // TODO: replace `user` and `pass` values from <https://forwardemail.net>
@@ -20,3 +20,4 @@ export const sendToEmail = async (options) => {
         html: html(token), // html body
     });
 }
+module.exports = { sendToEmail }
