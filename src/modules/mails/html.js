@@ -3,8 +3,8 @@
 
 
 
-export const html=(token)=>{
-    return `<!DOCTYPE html>
+export const html = (token) => {
+  return `<!DOCTYPE html>
     <html>
     <head>
     

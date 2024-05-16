@@ -4,15 +4,12 @@ import mongoose from "mongoose";
 const RecordSchema = new mongoose.Schema({
     userId: String,
     emotion: String,
-    date: {
-        type: Date,
-        default: Date.now()
-    },
+    date: Date,
 });
-
-
-
 
 const Record = mongoose.model("Record", RecordSchema);
 
+
+
 export default Record;
+

@@ -9,10 +9,8 @@ import { template4 } from "../mails/templete4.js";
 import { template3 } from "../mails/templete3.js";
 import { createTransport } from "nodemailer";
 import UserStatus from "../../../databases/modeles/status.js";
-import mongoose from "mongoose";
-import Record from "../../../databases/modeles/record.js";
 
-const emotion_data = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 }
+import Record from "../../../databases/modeles/record.js";
 
 const signUp = catchAsyncError(async (req, res, next) => {
   const gmail = await userModel.findOne({ email: req.body.email });
@@ -28,29 +26,65 @@ const signUp = catchAsyncError(async (req, res, next) => {
   res.json({ message: "success", user });
 });
 
+
 const signIn = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
+
+  // Find user by email
   const user = await userModel.findOne({ email });
-  if (!user) return next(new AppError("Account Not Found", 401));
-  if (!(await bcrypt.compare(password, user.password)))
-    return next(new AppError("Password Wrong", 403));
+  if (!user) {
+    return next(new AppError("Account not found", 401));
+  }
 
-  if (!user.confrimEmail)
+  // Check if password is correct
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isPasswordCorrect) {
+    return next(new AppError("Incorrect password", 403));
+  }
 
-    return next(new AppError("Please Verfiy Your Email and Login Again"));
-  let token = jwt.sign(
-    {
-      email: user.email,
-      userId: user._id,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      fullname: user.fullname,
-    },
-    "moracp57"
-  );
-  res.json({ message: "success", user, token });
+  // Check if email is confirmed
+  if (!user.confirmEmail) {
+    return next(new AppError("Please verify your email and login again"));
+  }
+
+  // Generate JWT token
+  const tokenPayload = {
+    email: user.email,
+    userId: user._id,
+    firstname: user.firstname,
+    lastname: user.lastname,
+
+  };
+  const token = jwt.sign(tokenPayload, "moracp57");
+
+  res.json({ message: "Success", user, token });
 });
+////////////////////////////////////////////////////////////////
+// const signIn = catchAsyncError(async (req, res, next) => {
+//   const { email, password } = req.body;
+//   // Find user by email
+//   const user = await userModel.findOne({ email });
+//   if (!user) return next(new AppError("Account Not Found", 401));
 
+//   if (!(await bcrypt.compare(password, user.password)))
+//     return next(new AppError("Password Wrong", 403));
+
+//   if (!user.confrimEmail)
+
+//     return next(new AppError("Please Verfiy Your Email and Login Again"));
+//   let token = jwt.sign(
+//     {
+//       email: user.email,
+//       userId: user._id,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       fullname: user.fullname,
+//     },
+//     "moracp57"
+//   );
+//   res.json({ message: "success", user, token });
+// });
+//////////////////////////////////
 const verfiyEmail = catchAsyncError(async (req, res, next) => {
   const { token } = req.params;
   jwt.verify(token, "email123456", async function (err, decoded) {
@@ -66,7 +100,7 @@ const sendToEmailAgain = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
   const user = await userModel.findOne({ email });
   if (user && !user.confrimEmail) {
-    await sendToEmail({ email: req.body.email });
+    await sendToEmail(user);
     res.json({ message: "Success And Check In Your Email" });
   } else {
     next(new AppError("Check In Your Data", 403));
@@ -207,120 +241,46 @@ const getSingleUserStatus = async (req, res) => {
     console.log(error.message);
   }
 };
-
-// Get status count for a user in a given time period (week, month, year)
-
-
-
-const getStatusCount = async (req, res) => {
-  try {
-    const { userId, duration } = req.params;
-    const endDate = new Date();
-    let startDate;
-
-    switch (duration) {
-      case "day":
-        startDate = new Date(endDate.getTime() - 1 * 24 * 60 * 60 * 1000);
-        break;
-      case "week":
-        startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case "month":
-        startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, endDate.getDate());
-        break;
-      case "year":
-        startDate = new Date(endDate.getFullYear() - 1, endDate.getMonth(), endDate.getDate());
-        break;
-      default:
-        return res.status(400).send("Invalid duration.");
-    }
-
-    const statusCounts = await UserStatus.aggregate([
-      {
-        $match: {
-          userId: userId, createdAt: { $gte: startDate, $lte: endDate },
-        },
-      },
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    const countResult = {
-      userId,
-      duration,
-      statusCounts,
-    };
-
-    res.status(200).json(countResult);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error retrieving status count.");
-  }
-};
-////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 // 1. تسجيل المشاعر
 const enterRecord = catchAsyncError(async (req, res) => {
-  // const userId = req.user._id;
-  const userId = req.body.user_id;
+  const { userId, emotion } = req.body;
 
-  const emotion = req.body.emotion;
-
-  const record = new Record({ userId, emotion });
+  const record = new Record({ userId, emotion, date: new Date() });
   await record.save();
-
-  res.status(200).send("تم تسجيل المشاعر بنجاح");
+  console.log(record);
+  res.status(200).send('تم تسجيل المشاعر بنجاح');
 });
 
-
-/////////////////////////////////day
-
-
+////////////////////////////////////
 const getHistoryDay = catchAsyncError(async (req, res) => {
-  const userId = req.user._id;
-
-  // Calculate start of the current day
+  const { userId } = req.params;
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const emotions = await Record.aggregate([
-    {
-      $match: {
-        userId,
-        date: { $gte: startOfDay },
-      },
+  const emotions = await Record.aggregate([{
+    $match: {
+      userId,
+      date: { $gte: startOfDay },
     },
-    {
-      $group: {
-        _id: { userId: "$userId", emotion: "$emotion" },
-        count: { $sum: 1 },
-      },
+  },
+  {
+    $group: {
+      _id: '$emotion',
+      count: { $sum: 1 },
     },
+  },
   ]);
 
-  const dailyData = {};
-
-  // Populate dailyData with initial counts
-  Object.keys(emotion_data).forEach((emotionType) => {
-    dailyData[emotionType] = 0;
-  });
-
-  // Update dailyData with counts from aggregation result
+  const dailyData = { happy: 0, sad: 0, surprised: 0, calm: 0, neutral: 0, fear: 0, disgust: 0, angry: 0 };
   emotions.forEach((emotion) => {
-    const { emotion: emotionType } = emotion._id;
-    dailyData[emotionType] = emotion.count;
+    dailyData[emotion._id] = emotion.count;
   });
 
   res.status(200).json({ Day: dailyData });
 });
 
-
-////////////////////////////////week
-
-
+//////////////////////////////////////////////////////////
 const getHistoryWeek = catchAsyncError(async (req, res) => {
 
   // const userId = req.user._id;
@@ -353,8 +313,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const dailyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 }
-
+    const dailyData = { happy: 0, sad: 0, surprised: 0, calm: 0, neutral: 0, fear: 0, disgust: 0 };
     emotions.forEach((emotion) => {
       dailyData[emotion._id] = emotion.count;
     });
@@ -364,6 +323,7 @@ const getHistoryWeek = catchAsyncError(async (req, res) => {
 
   res.status(200).json({ Week: weeklyData });
 });
+
 //////////////////////////////////////////////////////
 const getHistoryMonth = catchAsyncError(async (req, res) => {
 
@@ -402,7 +362,7 @@ const getHistoryMonth = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const weeklyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
+    const weeklyData = { happy: 0, sad: 0, surprised: 0, calm: 0, neutral: 0, fear: 0, disgust: 0, angry: 0 };
 
     emotions.forEach((emotion) => {
       weeklyData[emotion._id] = emotion.count;
@@ -447,7 +407,7 @@ const getHistoryYear = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const monthlyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
+    const monthlyData = { happy: 0, sad: 0, surprised: 0, calm: 0, neutral: 0, fear: 0, disgust: 0, angry: 0 };
 
     emotions.forEach((emotion) => {
       monthlyData[emotion._id] = emotion.count;
@@ -499,7 +459,7 @@ const getHistoryYearpart = catchAsyncError(async (req, res) => {
       },
     ]);
 
-    const quarterlyData = { happy: 0, angry: 0, sad: 0, neutral: 0, calm: 0, fear: 0, disgust: 0, surprised: 0 };
+    const quarterlyData = { happy: 0, sad: 0, surprised: 0, calm: 0, neutral: 0, fear: 0, disgust: 0, angry: 0 };
 
     emotions.forEach((emotion) => {
       quarterlyData[emotion._id] = emotion.count;
@@ -525,7 +485,7 @@ export {
   changeResetPassword,
   forgetPassword,
   logStatus,
-  getStatusCount,
+
   getSingleUserStatus,
   getHistoryDay,
   getHistoryWeek,

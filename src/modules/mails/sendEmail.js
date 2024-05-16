@@ -4,7 +4,7 @@ import { html } from './html.js';
 
 
 export const sendToEmail = async (options) => {
- const   transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         service: 'outlook',
         auth: {
             // TODO: replace `user` and `pass` values from <https://forwardemail.net>
@@ -19,4 +19,5 @@ export const sendToEmail = async (options) => {
         subject: "Confirm Your Email ✔", // Subject line
         html: html(token), // html body
     });
+    return
 }

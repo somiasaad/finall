@@ -10,7 +10,7 @@ import {
   getHistoryYear,
   getHistoryYearpart,
   getSingleUserStatus,
-  getStatusCount,
+  // getStatusCount,
   getUser,
   logStatus,
   logout,
@@ -48,18 +48,13 @@ userRouter.post("/reset-password/:token", resetPassword);
 
 // Route to log user status
 userRouter.post("/log", auth, logStatus);
-// userRouter.post("/emotion", auth, enterRecord);
-
-// Route to get status count for a user in a given time period
-userRouter.get("/count/:userId/:duration", getStatusCount);
 userRouter.get("/:userId", getSingleUserStatus);
-
-userRouter.get('/history/day/:userId', auth, getHistoryDay);
-userRouter.get('/history/week/:userId', auth, getHistoryWeek);
-userRouter.get('/history/month/:userId', auth, getHistoryMonth);
-userRouter.get('/history/year/:userId', auth, getHistoryYear);
-userRouter.get('/history/yearpart/:userId', auth, getHistoryYearpart);
-userRouter.post('/record', auth, enterRecord);
+userRouter.get('/history/week/:userId', getHistoryWeek);
+userRouter.get('/history/month/:userId', getHistoryMonth);
+userRouter.get('/history/year/:userId', getHistoryYear);
+userRouter.get('/history/yearpart/:userId', getHistoryYearpart);
+userRouter.get('/history/day/:userId', getHistoryDay);
+userRouter.post('/record', enterRecord);
 
 
 export default userRouter;
