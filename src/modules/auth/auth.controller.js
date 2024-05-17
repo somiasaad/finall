@@ -68,7 +68,7 @@ const sendToEmailAgain = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
   const user = await userModel.findOne({ email });
   if (user && !user.confrimEmail) {
-    await sendToEmail(user);
+    await sendToEmail({email:req.body.email});
     res.json({ message: "Success And Check In Your Email" });
   } else {
     next(new AppError("Check In Your Data", 403));
