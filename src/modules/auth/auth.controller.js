@@ -27,63 +27,31 @@ const signUp = catchAsyncError(async (req, res, next) => {
 });
 
 
+////////////////////////////////////////////////////////////////
 const signIn = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
-
   // Find user by email
   const user = await userModel.findOne({ email });
-  if (!user) {
-    return next(new AppError("Account not found", 401));
-  }
+  if (!user) return next(new AppError("Account Not Found", 401));
 
-  // Check if password is correct
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-  if (!isPasswordCorrect) {
-    return next(new AppError("Incorrect password", 403));
-  }
+  if (!(await bcrypt.compare(password, user.password)))
+    return next(new AppError("Password Wrong", 403));
 
-  // Check if email is confirmed
-  if (!user.confirmEmail) {
-    return next(new AppError("Please verify your email and login again"));
-  }
+  if (!user.confrimEmail)
 
-  // Generate JWT token
-  const tokenPayload = {
-    email: user.email,
-    userId: user._id,
-    firstname: user.firstname,
-    lastname: user.lastname,
-
-  };
-  const token = jwt.sign(tokenPayload, "moracp57");
-
-  res.json({ message: "Success", user, token });
+    return next(new AppError("Please Verfiy Your Email and Login Again"));
+  let token = jwt.sign(
+    {
+      email: user.email,
+      userId: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      fullname: user.fullname,
+    },
+    "moracp57"
+  );
+  res.json({ message: "success", user, token });
 });
-////////////////////////////////////////////////////////////////
-// const signIn = catchAsyncError(async (req, res, next) => {
-//   const { email, password } = req.body;
-//   // Find user by email
-//   const user = await userModel.findOne({ email });
-//   if (!user) return next(new AppError("Account Not Found", 401));
-
-//   if (!(await bcrypt.compare(password, user.password)))
-//     return next(new AppError("Password Wrong", 403));
-
-//   if (!user.confrimEmail)
-
-//     return next(new AppError("Please Verfiy Your Email and Login Again"));
-//   let token = jwt.sign(
-//     {
-//       email: user.email,
-//       userId: user._id,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       fullname: user.fullname,
-//     },
-//     "moracp57"
-//   );
-//   res.json({ message: "success", user, token });
-// });
 //////////////////////////////////
 const verfiyEmail = catchAsyncError(async (req, res, next) => {
   const { token } = req.params;
